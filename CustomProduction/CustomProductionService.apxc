@@ -1,0 +1,34 @@
+public class CustomProductionService {
+    @AuraEnabled
+    public static List<ListView> getListviewFilters() {
+        String objName = 'CustomProduction__c';
+        List<ListView> listquery = [SELECT DeveloperName FROM ListView WHERE SObjectType=:objName];
+        
+        return listquery;
+        
+    }
+    @AuraEnabled
+    public static List<ListView> getName() {
+        String objName = 'CustomProduction__c';
+        List<ListView> listquery = [SELECT DeveloperName FROM ListView WHERE SObjectType=:objName];
+        
+        return listquery;
+        
+    }
+    @AuraEnabled
+    public static CustomProduction__c getRecordId(Id recordId) {
+        return [SELECT Id, Name
+                FROM CustomProduction__c
+               	WHERE Id =: recordId];
+        
+    }
+    @AuraEnabled
+    public static CustomProduction__c getRecordName(String recordName) {
+        return [SELECT Id, Name
+                FROM CustomProduction__c
+               	WHERE Name =: recordName];
+        
+    }
+    
+
+}
