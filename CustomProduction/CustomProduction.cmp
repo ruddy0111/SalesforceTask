@@ -1,0 +1,197 @@
+<aura:component controller="CustomProductionService" implements="lightning:actionOverride,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="buttonDisable" type="boolean" default="false"/>
+    <aura:attribute name="handleSuccessed" type="boolean" default="true"/>
+    <aura:attribute name="CustomProductions" type="CustomProduction__c" default="false"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="recordName" type="String"/>
+    <aura:attribute name="pageReference" type="Object"/>
+    
+    
+    <!--aura handler with waiting and donewaiting events-->
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    
+    <!--<aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>-->
+    
+   
+    
+    <lightning:navigation aura:id="navService"/>
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    <!--loading spinner start-->
+            
+                <!--
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner__brand  slds-spinner slds-spinner__large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>-->
+
+            <!-- Loading spinner end-->
+    <!--<div>
+        
+        <lightning:listView 
+                            objectApiName="CustomProduction__c"
+                            listName="ALL"
+                            showSearchBar="true"
+                            showActionBar="true"
+                            enableInlineEdit="true"
+                            showRowLevelActions="true"
+                            />
+       
+    </div>
+ -->
+    <div class="slds-m-around_xx-large">
+        <aura:if isTrue = "{!v.isOpen}">
+            
+            <section role = "dialog" tabindex = "-1" aria-labelledby = "modal-heading-01" aria-modal = "true" aria-describedby = "modal-content-id-1" class = "slds-modal slds-fade-in-open slds-modal_small">
+                <aura:if isTrue="{!v.spinner}">
+                    <div class="exampleHolder">
+                        <lightning:spinner variant="brand" alternativeText="Loading" size="small" />
+                    </div>
+                </aura:if>
+                <div class = "modal-container slds-modal__container">
+                    <div class="modal-header slds-modal__header empty slds-modal__header--empty">
+                        <!--Modal Close Button-->
+                        <lightning:buttonIcon iconName = "utility:close"
+                                              onclick = "{! c.closeModel }"
+                                              alternativeText = "close"
+                                              variant = "bare-inverse"
+                                              class = "slds-button slds-button_icon slds-modal__close slds-button_icon-bare slds-button_icon-inverse"
+                                              type="button"
+                                              title="Close this window"/>
+                    </div>
+                    <div class="modal-body scrollable slds-modal__content slds-p-around--medium">
+                        <div class="windowViewMode-normal oneRecordActionWrapper isModal active lafPageHost">
+                            <div class="isModal inlinePanel oneRecordActionWrapper" data-aura-class="oneRecordActionWrapper">
+                                <div class="actionBody">
+                                    
+                                    <lightning:recordEditForm 
+                                                              recordId="{!v.recordId}"
+                                                              aura:id="recordEditForm"
+                                                              objectApiName="CustomProduction__c"
+                                                              onsubmit="{!c.handleSubmit}"
+                                                              onsuccess="{!c.handleSuccess}"
+                                                              onload = "{!c.handleEditLoad}"
+                                                              onerror="{!c.handleError}"
+                                                              >
+                                         
+                                        <div class = "slds-modal__header">
+                                            <lightning:messages />
+                                        <aura:if isTrue = "{!v.CustomProductions}">
+                                            <h2 id = "modal-heading-01" class = "slds-text-heading_medium slds-hyphenate">Edit Production : {!v.CustomProductions.Name}</h2>
+                                            <aura:set attribute = "else">
+                                                <h2 id = "modal-heading-01" class = "slds-text-heading_medium slds-hyphenate">New Production</h2>
+                                            </aura:set>
+                                        </aura:if>
+                                        </div>
+                                        <div class="slds-clearfix detail-panel-root footer-visible">
+                                            <div class="base-record-form-header-container">
+                                                <div class="record-body-container">
+                                                    <div class="record-layout-container">
+                                                        
+                                                        <!--그리드랑 랩으로 열 쪼개기-->
+                                                        <div class = "slds-modal__content slds-p-around_medium slds-grid slds-wrap">
+                                                            <div class = "slds-section slds-is-open slds-col slds-size_12-of-12">
+                                                                <h3 class = "slds-section__title slds-theme_shade">
+                                                                    <span class = "slds-truncate slds-p-horizontal_small" title = "Section Title">Production Information</span>
+                                                                </h3>
+                                                            </div>
+                                                            <!--1열-->
+                                                            <div class = "slds-col">
+                                                                <span>
+                                                                    <lightning:icon iconName = "action:user" size = "xx-small" alternativeText = "User"/>
+                                                                    <lightning:outputField fieldName = "OwnerId" />
+                                                                    <lightning:inputField name="recordName" fieldName = "Name" />
+                                                                    <lightning:inputField fieldName = "Payment__c"/>
+                                                                    <lightning:inputField fieldName = "Remarks__c"/>
+                                                                    <lightning:inputField fieldName = "Counseling__c"/>
+                                                                    <lightning:inputField fieldName = "Local_Time__c"/>
+                                                                    <lightning:inputField fieldName = "Email__c"/>
+                                                                </span>
+                                                            </div>
+                                                            <!--2열-->
+                                                            <div class = "slds-col">
+                                                                <span>
+                                                                    <lightning:inputField fieldName = "Date__c"/>
+                                                                    <lightning:inputField fieldName = "Date_Time__c"/>
+                                                                    <lightning:inputField fieldName = "Active__c"/>
+                                                                    <lightning:inputField fieldName = "Geolocation__c"/>
+                                                                    <lightning:inputField fieldName = "Product_Number__c"/>
+                                                                    <lightning:inputField fieldName = "Number_Of_CustomProduct__c"/>
+                                                                    <lightning:inputField fieldName = "Phone__c"/>
+                                                                    <lightning:inputField fieldName = "Target__c"/>
+                                                                </span>
+                                                            </div>
+                                                            <!--두 번째 섹션 나누기-->
+                                                            <div class = "slds-section slds-is-open slds-col slds-size_12-of-12">
+                                                                <h3 class = "slds-section__title slds-theme_shade">
+                                                                    <span class = "slds-truncate slds-p-horizontal_small" title = "Section Title">Address Information</span>
+                                                                </h3>
+                                                            </div>
+                                                            <!--1열-->
+                                                            <div class = "slds-col">
+                                                                <span>
+                                                                    <lightning:inputField fieldName = "Product_Line__c"/>
+                                                                </span>
+                                                            </div>
+                                                            <!--2열-->
+                                                            <div class = "slds-col">
+                                                                <span>
+                                                                    <lightning:inputField fieldName = "Discounted_Amount__c"/>
+                                                                </span>
+                                                            </div>
+                                                            <!--세 번째 섹션 나누기-->
+                                                            <div class = "slds-section slds-is-open slds-col slds-size_12-of-12">
+                                                                <h3 class = "slds-section__title slds-theme_shade">
+                                                                    <span class = "slds-truncate slds-p-horizontal_small" title = "Section Title">Additional Information</span>
+                                                                </h3>
+                                                            </div>
+                                                            <!--1열-->
+                                                            <div class = "slds-col">
+                                                                <span>
+                                                                    <lightning:inputField fieldName = "Product_Amount__c"/>
+                                                                </span>
+                                                            </div>
+                                                            <!--2열-->
+                                                            <div class = "slds-col">
+                                                                <span>
+                                                                    <lightning:inputField fieldName = "Ref_URL__c"/>
+                                                                </span>
+                                                            </div>
+                                                            <!--네 번째 섹션 나누기-->
+                                                            <div class = "slds-section slds-is-open slds-col slds-size_12-of-12">
+                                                                <h3 class = "slds-section__title slds-theme_shade">
+                                                                    <span class = "slds-truncate slds-p-horizontal_small" title = "Section Title">Description Information</span>
+                                                                </h3>
+                                                            </div>
+                                                            <!--이건 열하나.-->
+                                                            <div class = "slds-col">
+                                                                <span>
+                                                                    <lightning:inputField fieldName = "Discount_Rate__c"/>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class = "slds-docked-form-footer" style = "position : fixed">
+                                            <lightning:button class = "slds-m-top_small" variant = "neutral" type = "button" name = "Cancel" label = "Cancel" onclick = "{!c.closeModel}"/>
+
+                                            <lightning:button class = "slds-m-top_small" disabled="{!v.buttonDisable}" variant = "brand" type="submit" name = "Save" label="Save" />
+                                        </div>                                       
+                                    </lightning:recordEditForm>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class = "slds-backdrop slds-backdrop_open"></div>
+        </aura:if>       
+    </div>
+</aura:component>
