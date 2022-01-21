@@ -1,35 +1,46 @@
 trigger CPAddErrorTrigger on CustomProduction__c (before insert, before update){
     
-     /* Phone number 입력 강제*/
+    /* Phone number 입력 강제*/
     /*for(CustomProduction__c c:Trigger.new){
-        if(c.Phone__c==null){
-            c.addError(System.label.CP_ErrorCode_002);
-            //c.addError('Check the Phone number!');
-        }
-    }
+if(c.Phone__c==null){
+c.addError(System.label.CP_ErrorCode_002);
+//c.addError('Check the Phone number!');
+}
+}
 */
     /*Name 중복 확인*/
-      Set<string> cp_name= new Set<string>();
-    
+    Set<string> cp_name= new Set<string>();
     for(CustomProduction__c cp:Trigger.new){
-         cp_name.add(cp.Name);
+        cp_name.add(cp.Name);
     }
-     
-    List<CustomProduction__c> duplicateCPList = [Select name From CustomProduction__c where name = :cp_name];
-
-       Set<string> duplicate_cp = new Set<string>();
-
-       for(CustomProduction__c dup: duplicateCPList ){
-         duplicate_cp.add(dup.name);
-       }
-
-       for(CustomProduction__c c : Trigger.new){
+    
+    List<CustomProduction__c> duplicateCPList = [Select name From CustomProduction__c where name IN:cp_name];
+    
+    Set<string> duplicate_cp = new Set<string>();
+    
+    for(CustomProduction__c dup: duplicateCPList ){
+        duplicate_cp.add(dup.name);
+    }
+    if(Trigger.isInsert){
+        for(CustomProduction__c c : Trigger.new){
             if(c.name!=null){
-               if(duplicate_cp.contains(c.name)){
-                 c.addError(System.label.CP_ErrorCode_003);
-               }
-            
+                if(duplicate_cp.contains(c.name)){
+                    c.addError(System.label.CP_ErrorCode_003);
+                }
+                
             }
-       }
+        }
+        
+    }
+    if(Trigger.isUpdate){
+        for(CustomProduction__c c : Trigger.new){
+            if(c.name!=null&&trigger.newMap.get(c.Id).name != trigger.oldMap.get(c.Id).name){
+                if(duplicate_cp.contains(c.name)){
+                    c.addError(System.label.CP_ErrorCode_003);
+                }
+                
+            }
+        }
+    }
     
 }
