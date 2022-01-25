@@ -1,0 +1,64 @@
+<aura:component controller="SampleAuraServies" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <!-- attributes : 변수! session, hashmap-->
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    
+    <aura:attribute name="AccountName_text" type="Object"/>
+    <aura:attribute name="Industry_text" type="Object"/>
+    <aura:attribute name="Rating_text" type="Object"/>
+    <aura:attribute name="Phone_text" type="Object"/>
+    
+    <aura:attribute name="lnsertcolumns" type="List"/>
+    
+    
+    <!-- handlers : 처음에 실행되는 function-->
+    <aura:handler name="init" value="{!this }" action="{!c.init }"/>
+    <!--
+<aura:handler event="force:refreshView" action="{!c.init}"/> : insert 후 refresh 안됨
+<aura:handler event="force:refreshView" action="{!c.handleClick}" /> : 아마도 insert가 되는 controller 내용이 동작하기 전에 refresh되는 듯
+상기 핸들러가 작동하지 않는 이유 : 작동 순서 탓
+-->
+    
+    
+    <!-- the container element determine the height of the datatable -->
+    <lightning:card title="Clone Account" iconName="standard:account">
+        <div style="height: 80%; margin:5px;">
+            <lightning:datatable aura:id="accountTable"
+                                 keyField="id"
+                                 data="{!v.data}"
+                                 columns="{!v.columns }"
+                                 hideCheckboxColumn="true"/>
+        </div>
+    </lightning:card>
+    
+    <div style="background-color:white; margin:5px; padding:3px;">
+        <div class="row">
+            
+            <h2 class="header">Insert Account</h2>
+            
+            <!-- Neutral variant (default) -->
+            <lightning:button label="Create New" title="Neutral action" onclick="{! c.handleClick }"/>            
+            
+            <lightning:textarea aura:id="AccName_id" name="AccountName_text" required="true" placeholder="Name value" label="Account Name field" messageWhenValueMissing="Check this field" />
+            <lightning:textarea aura:id="AccIndustry_id" name="Industry_text" placeholder="Industry value" label="Account Industry field" />
+            
+            
+            <lightning:select aura:id="AccRating_id" name="Rating_text" label="Account Rating field">
+                <option>Hot</option>
+                <option>warm</option>
+                <option>cold</option>
+            </lightning:select>
+            
+            <lightning:input type="tel" aura:id="AccPhone_id" name="Phone_text" placeholder="000-0000-0000" label="Account Phone field" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}"/>
+            
+            
+            <!--
+      <lightning:textarea aura:id="AccRating_id" name="Rating_text" placeholder="Rating value" label="Account Rating field"/>
+   
+            <lightning:textarea aura:id="AccPhone_id" name="Phone_text" placeholder="Phone value" label="Account Phone field" maxlength="13" messageWhenTooLong="A maximum of 13 characters are allowed in a tweet."/>
+   -->        
+        </div>
+        <div style="height:20px"></div>
+    </div>
+    
+</aura:component>
