@@ -1,0 +1,16 @@
+public with sharing class samplevfpcon {
+    
+    /*** Controller: ***/
+		List<Account> accounts;
+        
+        public List<Account> getAccounts() {
+            if(accounts == null)
+                accounts = [SELECT name, industry, rating, phone FROM account LIMIT 20];
+            return accounts;
+        }
+    public samplevfpcon(ApexPages.StandardSetController controller){
+        
+    }
+    
+   
+}
