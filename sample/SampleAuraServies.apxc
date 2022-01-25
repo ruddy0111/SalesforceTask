@@ -1,0 +1,21 @@
+public class SampleAuraServies {
+    @AuraEnabled
+    public static List<Account> getAccounts() {
+        return[SELECT Id, Name, Rating, Industry, Phone, CreatedDate 
+               FROM Account
+               ORDER BY CreatedDate DESC
+               Limit 20];
+    }
+    @AuraEnabled
+     public static void AccountHandler (String AccName, String AccIndustry, String AccRating, String AccPhone){
+         System.debug('in AccountHandler');
+         System.debug('in AccName : ' + AccName);
+        Account act = new Account(Name=AccName,Industry=AccIndustry, Rating=AccRating, Phone=AccPhone);
+        try{
+            insert act;
+        }catch(DMLException e){
+            system.debug('DML Exception: ' + e);
+        }
+    }
+    
+}
