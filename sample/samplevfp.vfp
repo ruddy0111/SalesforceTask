@@ -1,0 +1,73 @@
+<!-- For this example to render fully, associate the page
+with a valid account record in the URL.
+For example: https://Salesforce_instance/apex/myPage?id=001D000000IRt53 -->
+
+<!-- Page: -->
+
+<apex:page extensions="samplevfpcon,SearchInVFController" standardController="Account" id="thePage" showHeader="false" sidebar="false" recordSetVar="Accounts">
+    
+    <apex:form >
+        <apex:pageBlock title="Account">
+            <apex:pageBlockTable value="{!accounts}" var="account" id="theTable" rowClasses="odd,even" styleClass="tableClass">        
+                
+                <apex:column >
+                    <apex:facet name="header">Name</apex:facet>
+
+                    <apex:outputText value="{!account.name}"/>
+                </apex:column>
+                
+                <apex:column >
+                    <apex:facet name="header">Industry</apex:facet>
+
+                    <apex:outputText value="{!account.Industry}"/>
+                </apex:column>
+                
+                <apex:column >
+                    <apex:facet name="header">Rating</apex:facet>
+
+                    <apex:outputText value="{!account.Rating}"/>
+                </apex:column>    
+                
+                <apex:column >
+                    <apex:facet name="header">Phone</apex:facet>
+
+                    <apex:outputText value="{!account.Phone}"/>
+                </apex:column>
+                
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <apex:form >
+        <apex:pageBlock title="Search Account">
+            <apex:inputText value="{!searchKey}" label="Input" />
+            <apex:commandButton value="Search records" action="{!search}"/>
+            <apex:commandButton value="Clear records" action="{!clear}"/>
+
+        <apex:pageBlockTable value="{!acc}" var="a">
+            <apex:column >
+                    <apex:facet name="header">Name</apex:facet>
+                    <apex:outputText value="{!a.name}"/>
+                </apex:column>
+                
+                <apex:column >
+                    <apex:facet name="header">Industry</apex:facet>
+                    <apex:outputText value="{!a.Industry}"/>
+                </apex:column>
+                
+                <apex:column >
+                    <apex:facet name="header">Rating</apex:facet>
+                    <apex:outputText value="{!a.Rating}"/>
+                </apex:column>    
+                
+                <apex:column >
+                    <apex:facet name="header">Phone</apex:facet>
+                    <apex:outputText value="{!a.Phone}"/>
+                </apex:column>
+            
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:form>
+
+
+</apex:page>
