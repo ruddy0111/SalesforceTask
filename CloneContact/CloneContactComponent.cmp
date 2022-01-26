@@ -1,0 +1,171 @@
+<aura:component controller="CloneContactAuraServies" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <!-- attributes : 변수! session, hashmap-->
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="allData" type="List"/>
+    <aura:attribute name="sortedBy" default ="name" type="String"/>
+    <aura:attribute name="sortedDirection" default="asc" type="String"/>
+    <aura:attribute name="conDelId" type="List"/>
+    <aura:attribute name="listViewValue" type="String"/>
+    <aura:attribute name="searchValue" type="String"/>
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="options" type="List"/>
+    <aura:attribute name="pageReference" type="Object"/>
+    <aura:attribute name="countItem" type="String"/>
+    <aura:attribute name="newContact" type="String[]" default="['Name','AccountId', 'Account Name', 'Title', 'Phone', 'Email', 'Contact Owner Alias']"/>
+    
+    
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <lightning:navigation aura:id="navService"/>
+    
+    <!-- handlers : 처음에 실행되는 function-->
+    <aura:handler name="init" value="{!this }" action="{!c.init }"/>
+    <aura:handler event="force:showToast" action="{!c.handleToastEvent}"/>
+    <aura:handler name="onSaveSuccess" event="force:editRecord" action="{!c.handleSaveSuccess}"/>
+    
+    
+    <!-- the container element determine the height of the datatable -->
+    <lightning:card class="slds-text-heading_x-small slds-card_boundary">
+        <!-- customize Header S -->
+        
+        <div class="slds-page-header" style="margin=0px; top=0px">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media slds-no-space slds-grow">
+                            <div class="slds-icon slds-page-header__icon">
+                                <lightning:icon iconName="standard:contact" />
+                            </div>
+                            
+                            <div class="slds-media__body slds-align-middle" style="margin-left:8px">
+                                <span class="slds-var-p-right_x-small"> Clon Contact</span>
+                                <div class="slds-grid slds-media__body">
+                                    <div class="triggerLink slds-button slds-button--reset slds-type-focus slds-truncate slds-page-header__title slds-text-color--default forceListViewPicker" data-aura-class="forceListViewPicker">
+                                        <div class="triggerLinkTextAndIconWrapper slds-page-header__name" onclick="{!c.showListView}">
+                                            <div class="slds-page-header__name-title">
+                                                <h1>
+                                                    <!--<span class="triggerLinkText selectedListView slds-page-header__title slds-truncate slds-p-right__xx-small uiOutputText" title="Recently Viewed" data-aura-class="uiOutputText" >Recently Viewed</span>-->
+                                                    <lightning:combobox
+                                                                        name="progress"
+                                                                        value="allContacts"
+                                                                        options="{!v.options}"
+                                                                        onchange="{!c.showListView}" >
+                                                    </lightning:combobox>
+                                                </h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <!-- Button group: simple buttons S-->
+                            <ul class="slds-button-group-list">
+                                <li>
+                                    <div style="float:right; margin-bottom : 10px">
+                                        
+                                        <lightning:buttonGroup>
+                                            <lightning:button label="New" onclick="{!c.createRecord}"/>
+                                            <lightning:button label="Delete" onclick="{!c.handleClickDel}"/>
+                                        </lightning:buttonGroup>
+                                    </div>
+                                </li>
+                            </ul>
+                            <!-- Button group: simple buttons E-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-meta">
+                    <div class="countSortedByFilteredBy">
+                        {!v.countItem} items • Updated a few seconds ago
+                    </div>
+                </div>
+                
+                
+                <div class="slds-page-header__col-controls">
+                    <div class="slds-page-header__controls">
+                        <!--Search Area S-->
+                        <div style="width:250px; float:right;overflow:hidden;margin-left:10px;">
+                            <lightning:input class="input-search"
+                                             aura:id="SearchBox"
+                                             type="Search"
+                                             value="{!v.searchValue}"
+                                             placeholder="Search here"
+                                             style="width:200px; float:left;margin=0px;"
+                                             />
+                            <lightning:buttonIcon iconName="utility:search" alternativeText="search" title="search" onclick="{!c.searchTable}" />
+                        </div>
+                        <!--Search Area E-->
+                        <div class="slds-page-header__control">
+                            
+                            <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                                <button class="slds-button slds-button_icon slds-button_icon-more" aria-haspopup="true" aria-expanded="false" title="List View Controls">
+                                    <lightning:icon iconName="utility:settings" size="x-small" />
+                                </button>
+                            </div>
+                        </div>
+                        <div class="slds-page-header__control">
+                            <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                                <button class="slds-button slds-button_icon slds-button_icon-more" aria-haspopup="true" aria-expanded="false" title="Change view">
+                                    <lightning:icon iconName="utility:table" size="x-small" />
+                                </button>
+                            </div>
+                        </div>
+                        <div class="slds-page-header__control">
+                            <button class="slds-button slds-button_icon slds-button_icon-border-filled" title="Edit List">
+                                <lightning:icon iconName="utility:edit" size="x-small" />
+                            </button>
+                        </div>
+                        <div class="slds-page-header__control">
+                            <button class="slds-button slds-button_icon slds-button_icon-border-filled" title="Refresh List">
+                                <lightning:icon iconName="utility:refresh" size="x-small" />
+                            </button>
+                        </div>
+                        <div class="slds-page-header__control">
+                            <ul class="slds-button-group-list">
+                                <li>
+                                    <button class="slds-button slds-button_icon slds-button_icon-border-filled" title="Charts">
+                                        <lightning:icon iconName="utility:chart" size="x-small" />
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="slds-button slds-button_icon slds-button_icon-border-filled" title="Filters">
+                                        <lightning:icon iconName="utility:filterList" size="x-small" />
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+        
+        <!-- customize Header E --> 
+        <div class="slds-scrollable--y" style="height: 530px">
+            <lightning:datatable aura:id="contactTable"
+                                 keyField="id"
+                                 data="{!v.data}"
+                                 columns="{!v.columns }"
+                                 showRowNumberColumn="true"
+                                 hideCheckboxColumn="false"
+                                 onrowselection="{!c.handleRowAction}"
+                                 onsort="{!c.updateColumnSorting}"
+                                 sortedBy="{!v.sortedBy}"
+                                 sortedDirection="{!v.sortedDirection}"
+                                 onrowaction = "{!c.handleRowActions}"
+                                 enableInfiniteLoading="true"
+                                 />
+            
+        </div>
+        
+    </lightning:card>
+</aura:component>
