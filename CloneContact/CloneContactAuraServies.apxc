@@ -1,0 +1,82 @@
+public class CloneContactAuraServies {
+    @AuraEnabled
+    public static List<Contact> getContacts() {
+        List<Contact> contacts = [SELECT Id, Name, Account.Name, Title, Phone, Email, Owner.Alias
+                                  FROM contact
+                                  ORDER BY CreatedDate ];
+        return contacts;
+    }
+    @AuraEnabled
+    public static void deleteRecord(List<Contact> listId){
+        List<Contact> ConList = [SELECT Id FROM Contact WHERE Id IN :listId];
+        
+        delete ConList;       
+    }
+    @AuraEnabled
+    public static void deleteOneRecord(String idlist){
+        List<Contact> ConList = [SELECT Id FROM Contact WHERE Id =:idlist];
+        
+        delete ConList;       
+    }
+    
+    @AuraEnabled
+    public static list<contact> searchController(string searchKey) {
+        string searchKeyword = '%' + searchKey + '%';
+        list<contact> searchquery = [SELECT Id, Name, Account.Name, Title, Phone, Email, Owner.Alias
+                                     FROM contact
+                                     WHERE name
+                                     like:searchKeyword];
+        return searchquery;
+    }
+    
+    @AuraEnabled
+    public static list<contact> listAllViewController() {
+        list<contact> listquery = [SELECT Id, Name, Account.Name, Title, Phone, Email, Owner.Alias
+                                   FROM contact
+                                   ];
+        return listquery;
+    }
+    @AuraEnabled
+    public static list<Contact> recentlyViewController() {
+        list<Contact> listquery = [SELECT Id, Name, Account.Name, Title, Phone, Email, Owner.Alias
+                                   FROM contact
+                                   WHERE LastViewedDate=LAST_N_DAYS:14];
+        return listquery;
+    }
+    @AuraEnabled
+    public static list<contact> listViewMyContactsController() {
+        String userName = userinfo.getuserid();
+        list<contact> listquery = [SELECT Id, Name, Account.Name, Title, Phone, Email, Owner.Alias
+                                   FROM contact
+                                   WHERE Owner.id =:userName];
+        return listquery;
+    }
+    @AuraEnabled
+    public static list<contact> listViewLastWeekController() {
+        list<contact> listquery = [SELECT Id, Name, Account.Name, Title, Phone, Email, Owner.Alias
+                                   FROM contact
+                                   WHERE CreatedDate = LAST_WEEK];
+        return listquery;
+    }
+    @AuraEnabled
+    public static list<contact> listViewThisWeekController() {
+        list<contact> listquery = [SELECT Id, Name, Account.Name, Title, Phone, Email, Owner.Alias
+                                   FROM contact
+                                   WHERE CreatedDate = THIS_WEEK];
+        return listquery;
+    }
+    @AuraEnabled
+    public static list<contact> listViewBirthController() {
+        list<contact> listquery = [SELECT Id, Name, Account.Name, Title, Phone, Email, Owner.Alias
+                                   FROM contact
+                                   WHERE Birthdate = THIS_MONTH];
+        return listquery;
+    }
+    @AuraEnabled
+    public static list<contact> countTimeController() {
+        list<contact> listquery = [SELECT LastModifiedDate  FROM contact  Order by LastModifiedDate desc limit 1];
+        return listquery;
+    }
+    
+
+}
